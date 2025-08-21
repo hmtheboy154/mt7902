@@ -108,7 +108,7 @@ enum mt7902_txq_id {
 	MT7902_TXQ_BAND0,
 	MT7902_TXQ_BAND1,
 	MT7902_TXQ_MCU_WM = 15,
-	MT7902_TXQ_FWDL,
+	MT7902_TXQ_FWDL = 16,
 };
 
 enum mt7902_rxq_id {
