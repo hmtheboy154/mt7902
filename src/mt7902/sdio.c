@@ -17,7 +17,7 @@
 #include "mcu.h"
 
 static const struct sdio_device_id mt7902s_table[] = {
-	{ SDIO_DEVICE(SDIO_VENDOR_ID_MEDIATEK, 0x7901),
+	{ SDIO_DEVICE(SDIO_VENDOR_ID_MEDIATEK, 0x7902),
 		.driver_data = (kernel_ulong_t)MT7902_FIRMWARE_WM },
 	{ }	/* Terminating entry */
 };

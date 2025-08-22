@@ -13,16 +13,7 @@
 #include "../mt76_connac2_mac.h"
 
 static const struct usb_device_id mt7902u_device_table[] = {
-	{ USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7961, 0xff, 0xff, 0xff),
-		.driver_info = (kernel_ulong_t)MT7902_FIRMWARE_WM },
-	/* Comfast CF-952AX */
-	{ USB_DEVICE_AND_INTERFACE_INFO(0x3574, 0x6211, 0xff, 0xff, 0xff),
-		.driver_info = (kernel_ulong_t)MT7902_FIRMWARE_WM },
-	/* Netgear, Inc. [A8000,AXE3000] */
-	{ USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9060, 0xff, 0xff, 0xff),
-		.driver_info = (kernel_ulong_t)MT7902_FIRMWARE_WM },
-	/* TP-Link TXE50UH */
-	{ USB_DEVICE_AND_INTERFACE_INFO(0x35bc, 0x0107, 0xff, 0xff, 0xff),
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7902, 0xff, 0xff, 0xff),
 		.driver_info = (kernel_ulong_t)MT7902_FIRMWARE_WM },
 	{ },
 };
