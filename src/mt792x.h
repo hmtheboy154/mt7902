@@ -487,19 +487,6 @@ void mt792xu_copy(struct mt76_dev *dev, u32 offset, const void *data, int len);
 void mt792xu_disconnect(struct usb_interface *usb_intf);
 void mt792xu_stop(struct ieee80211_hw *hw, bool suspend);
 
-static inline void
-mt792x_skb_add_usb_sdio_hdr(struct mt792x_dev *dev, struct sk_buff *skb,
-			    int type)
-{
-	u32 hdr, len;
-
-	len = mt76_is_usb(&dev->mt76) ? skb->len : skb->len + sizeof(hdr);
-	hdr = FIELD_PREP(MT792x_SDIO_HDR_TX_BYTES, len) |
-	      FIELD_PREP(MT792x_SDIO_HDR_PKT_TYPE, type);
-
-	put_unaligned_le32(hdr, skb_push(skb, sizeof(hdr)));
-}
-
 int __mt792xe_mcu_drv_pmctrl(struct mt792x_dev *dev);
 int mt792xe_mcu_drv_pmctrl(struct mt792x_dev *dev);
 int mt792xe_mcu_fw_pmctrl(struct mt792x_dev *dev);
