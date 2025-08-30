@@ -395,8 +395,6 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
 		goto err_free_dev;
 
 	chipid = mt7921_l1_rr(dev, MT_HW_CHIPID);
-	if (chipid == 0x7961 && (mt7921_l1_rr(dev, MT_HW_BOUND) & BIT(7)))
-		chipid = 0x7920;
 	mdev->rev = (chipid << 16) |
 		    (mt7921_l1_rr(dev, MT_HW_REV) & 0xff);
 	dev_info(mdev->dev, "ASIC revision: %04x\n", mdev->rev);
