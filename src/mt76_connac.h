@@ -182,14 +182,14 @@ static inline bool is_mt7920(struct mt76_dev *dev)
 	return mt76_chip(dev) == 0x7920;
 }
 
-static inline bool is_mt7922(struct mt76_dev *dev)
+static inline bool is_mt7902(struct mt76_dev *dev)
 {
-	return mt76_chip(dev) == 0x7922;
+	return mt76_chip(dev) == 0x7902;
 }
 
 static inline bool is_mt7921(struct mt76_dev *dev)
 {
-	return mt76_chip(dev) == 0x7961 || is_mt7922(dev) || is_mt7920(dev);
+	return is_mt7902(dev);
 }
 
 static inline bool is_mt7663(struct mt76_dev *dev)
@@ -267,17 +267,7 @@ static inline bool is_connac_v1(struct mt76_dev *dev)
 
 static inline bool is_mt76_fw_txp(struct mt76_dev *dev)
 {
-	switch (mt76_chip(dev)) {
-	case 0x7961:
-	case 0x7920:
-	case 0x7922:
-	case 0x7925:
-	case 0x7663:
-	case 0x7622:
-		return false;
-	default:
-		return true;
-	}
+	return false;
 }
 
 static inline u8 mt76_connac_chan_bw(struct cfg80211_chan_def *chandef)
