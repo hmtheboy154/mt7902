@@ -691,7 +691,7 @@ int mt792x_init_wiphy(struct ieee80211_hw *hw)
 	ieee80211_hw_set(hw, SUPPORTS_MULTI_BSSID);
 	ieee80211_hw_set(hw, SUPPORTS_ONLY_HE_MULTI_BSSID);
 
-	if (is_mt7921(&dev->mt76)) {
+	if (is_connac2(&dev->mt76)) {
 		ieee80211_hw_set(hw, CHANCTX_STA_CSA);
 	}
 
