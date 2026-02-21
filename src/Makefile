@@ -1,55 +1,29 @@
 # SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux Bluetooth HCI device drivers.
-#
 
-obj-$(CONFIG_BT_HCIVHCI)	+= hci_vhci.o
-obj-$(CONFIG_BT_HCIUART)	+= hci_uart.o
-obj-$(CONFIG_BT_HCIBCM203X)	+= bcm203x.o
-obj-$(CONFIG_BT_HCIBCM4377)	+= hci_bcm4377.o
-obj-$(CONFIG_BT_HCIBPA10X)	+= bpa10x.o
-obj-$(CONFIG_BT_HCIBFUSB)	+= bfusb.o
-obj-$(CONFIG_BT_HCIDTL1)	+= dtl1_cs.o
-obj-$(CONFIG_BT_HCIBT3C)	+= bt3c_cs.o
-obj-$(CONFIG_BT_HCIBLUECARD)	+= bluecard_cs.o
+# 1. Force enable requested features via C preprocessor flags.
+# This ensures the features are compiled into your OOT module regardless of the host kernel's .config.
+ccflags-y += -DCONFIG_BT_HCIBTUSB_AUTOSUSPEND=1
+ccflags-y += -DCONFIG_BT_HCIBTUSB_POLL_SYNC=1
+ccflags-y += -DCONFIG_BT_HCIBTUSB_MTK=1
+ccflags-y += -DCONFIG_BT_MTK=1
 
-obj-$(CONFIG_BT_HCIBTUSB)	+= btusb.o
-obj-$(CONFIG_BT_HCIBTSDIO)	+= btsdio.o
+# Enable UART specific dependencies for MTK (Serdev and H4 protocol)
+ccflags-y += -DCONFIG_BT_HCIUART_SERDEV=1
+ccflags-y += -DCONFIG_BT_HCIUART_H4=1
+ccflags-y += -DCONFIG_BT_HCIUART_BCSP=1
+ccflags-y += -DCONFIG_BT_HCIUART_LL=1
+ccflags-y += -DCONFIG_BT_HCIUART_3WIRE=1
 
-obj-$(CONFIG_BT_INTEL)		+= btintel.o
-obj-$(CONFIG_BT_INTEL_PCIE)	+= btintel_pcie.o btintel.o
-obj-$(CONFIG_BT_ATH3K)		+= ath3k.o
-obj-$(CONFIG_BT_MRVL)		+= btmrvl.o
-obj-$(CONFIG_BT_MRVL_SDIO)	+= btmrvl_sdio.o
-obj-$(CONFIG_BT_MTKSDIO)	+= btmtksdio.o
-obj-$(CONFIG_BT_MTKUART)	+= btmtkuart.o
-obj-$(CONFIG_BT_QCOMSMD)	+= btqcomsmd.o
-obj-$(CONFIG_BT_BCM)		+= btbcm.o
-obj-$(CONFIG_BT_RTL)		+= btrtl.o
-obj-$(CONFIG_BT_QCA)		+= btqca.o
-obj-$(CONFIG_BT_MTK)		+= btmtk.o
+# 2. Define the target modules to build (ignoring SDIO, Intel, Broadcom, etc.) 
+obj-m += btusb_mt7902.o
+btusb_mt7902-y += btusb.o btmtk.o btmtkuart.o hci_uart.o
 
-obj-$(CONFIG_BT_VIRTIO)		+= virtio_bt.o
-obj-$(CONFIG_BT_NXPUART)	+= btnxpuart.o
-
-obj-$(CONFIG_BT_HCIUART_NOKIA)	+= hci_nokia.o
-
-obj-$(CONFIG_BT_HCIRSI)		+= btrsi.o
-
-btmrvl-y			:= btmrvl_main.o
-btmrvl-$(CONFIG_DEBUG_FS)	+= btmrvl_debugfs.o
-
-hci_uart-y				:= hci_ldisc.o
-hci_uart-$(CONFIG_BT_HCIUART_SERDEV)	+= hci_serdev.o
-hci_uart-$(CONFIG_BT_HCIUART_H4)	+= hci_h4.o
-hci_uart-$(CONFIG_BT_HCIUART_BCSP)	+= hci_bcsp.o
-hci_uart-$(CONFIG_BT_HCIUART_LL)	+= hci_ll.o
-hci_uart-$(CONFIG_BT_HCIUART_ATH3K)	+= hci_ath.o
-hci_uart-$(CONFIG_BT_HCIUART_3WIRE)	+= hci_h5.o
-hci_uart-$(CONFIG_BT_HCIUART_INTEL)	+= hci_intel.o
-hci_uart-$(CONFIG_BT_HCIUART_BCM)	+= hci_bcm.o
-hci_uart-$(CONFIG_BT_HCIUART_QCA)	+= hci_qca.o
-hci_uart-$(CONFIG_BT_HCIUART_AG6XX)	+= hci_ag6xx.o
-hci_uart-$(CONFIG_BT_HCIUART_MRVL)	+= hci_mrvl.o
-hci_uart-$(CONFIG_BT_HCIUART_AML)	+= hci_aml.o
-hci_uart-objs				:= $(hci_uart-y)
+# 3. Assemble the hci_uart module from its required components
+btusb_mt7902-y := hci_ldisc.o
+btusb_mt7902-y += hci_serdev.o
+btusb_mt7902-y += hci_h4.o
+btusb_mt7902-y += hci_h5.o
+btusb_mt7902-y += hci_bcsp.o
+btusb_mt7902-y += hci_ll.o
+# Should be unused, but we have to build them in for hci_uart
+btusb_mt7902-y += hci_ath.o hci_intel.o hci_bcm.o hci_qca.o hci_ag6xx.o hci_mrvl.o hci_aml.o
