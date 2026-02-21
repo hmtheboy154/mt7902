@@ -707,12 +707,14 @@ static void aml_serdev_remove(struct serdev_device *serdev)
 	hci_uart_unregister_device(&amldev->serdev_hu);
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0))
 static void aml_serdev_shutdown(struct serdev_device *serdev)
 {
 	struct aml_serdev *amldev = serdev_device_get_drvdata(serdev);
 
 	aml_power_off(amldev);
 }
+#endif
 
 static const struct aml_device_data data_w155s2 = {
 	.iccm_offset = 256 * 1024,
@@ -732,7 +734,9 @@ MODULE_DEVICE_TABLE(of, aml_bluetooth_of_match);
 static struct serdev_device_driver aml_serdev_driver = {
 	.probe = aml_serdev_probe,
 	.remove = aml_serdev_remove,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0))
 	.shutdown = aml_serdev_shutdown,
+#endif
 	.driver = {
 		.name = "hci_uart_aml",
 		.of_match_table = aml_bluetooth_of_match,

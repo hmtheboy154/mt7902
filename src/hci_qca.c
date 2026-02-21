@@ -2570,6 +2570,7 @@ static void qca_serdev_remove(struct serdev_device *serdev)
 	hci_uart_unregister_device(&qcadev->serdev_hu);
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0))
 static void qca_serdev_shutdown(struct serdev_device *serdev)
 {
 	int ret;
@@ -2619,6 +2620,7 @@ static void qca_serdev_shutdown(struct serdev_device *serdev)
 		usleep_range(8000, 10000);
 	}
 }
+#endif
 
 static int __maybe_unused qca_suspend(struct device *dev)
 {
@@ -2795,7 +2797,9 @@ static void hciqca_coredump(struct device *dev)
 static struct serdev_device_driver qca_serdev_driver = {
 	.probe = qca_serdev_probe,
 	.remove = qca_serdev_remove,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0))
 	.shutdown = qca_serdev_shutdown,
+#endif
 	.driver = {
 		.name = "hci_uart_qca",
 		.of_match_table = of_match_ptr(qca_bluetooth_of_match),

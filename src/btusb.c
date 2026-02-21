@@ -4475,11 +4475,18 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
 
 	BT_DBG("intf %p", intf);
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0))
 	/* Don't auto-suspend if there are connections or discovery in
 	 * progress; external suspend calls shall never fail.
 	 */
 	if (PMSG_IS_AUTO(message) &&
 	    (hci_conn_count(data->hdev) || hci_discovery_active(data->hdev)))
+#else
+	/* Don't auto-suspend if there are connections; external suspend calls
+	 * shall never fail.
+	 */
+	if (PMSG_IS_AUTO(message) && hci_conn_count(data->hdev))
+#endif
 		return -EBUSY;
 
 	if (data->suspend_count++)
