@@ -345,7 +345,11 @@ int mt7921_register_device(struct mt792x_dev *dev)
 	dev->mphy.hw->wiphy->available_antennas_rx = dev->mphy.chainmask;
 	dev->mphy.hw->wiphy->available_antennas_tx = dev->mphy.chainmask;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))
 	queue_work(system_percpu_wq, &dev->init_work);
+#else
+	queue_work(system_wq, &dev->init_work);
+#endif
 
 	return 0;
 }

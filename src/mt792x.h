@@ -415,7 +415,10 @@ void mt792x_sta_statistics(struct ieee80211_hw *hw,
 			   struct ieee80211_vif *vif,
 			   struct ieee80211_sta *sta,
 			   struct station_info *sinfo);
-void mt792x_set_coverage_class(struct ieee80211_hw *hw, int radio_idx,
+void mt792x_set_coverage_class(struct ieee80211_hw *hw,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))
+  					int radio_idx,
+#endif
 			       s16 coverage_class);
 void mt792x_dma_cleanup(struct mt792x_dev *dev);
 int mt792x_dma_enable(struct mt792x_dev *dev);

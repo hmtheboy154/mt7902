@@ -1768,7 +1768,10 @@ s8 mt76_get_power_bound(struct mt76_phy *phy, s8 txpower)
 EXPORT_SYMBOL_GPL(mt76_get_power_bound);
 
 int mt76_get_txpower(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-		     unsigned int link_id, int *dbm)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
+		     unsigned int link_id,
+#endif
+			 int *dbm)
 {
 	struct mt76_phy *phy = mt76_vif_phy(hw, vif);
 	int n_chains, delta;
@@ -1948,7 +1951,11 @@ void mt76_sw_scan_complete(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 }
 EXPORT_SYMBOL_GPL(mt76_sw_scan_complete);
 
-int mt76_get_antenna(struct ieee80211_hw *hw, int radio_idx, u32 *tx_ant,
+int mt76_get_antenna(struct ieee80211_hw *hw, 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))
+  					int radio_idx,
+#endif
+					 u32 *tx_ant,
 		     u32 *rx_ant)
 {
 	struct mt76_phy *phy = hw->priv;

@@ -13,6 +13,7 @@
 #include <linux/leds.h>
 #include <linux/usb.h>
 #include <linux/average.h>
+#include <linux/version.h>
 #include <linux/soc/mediatek/mtk_wed.h>
 #include <net/mac80211.h>
 #include <net/page_pool/helpers.h>
@@ -1561,7 +1562,10 @@ int mt76_get_min_avg_rssi(struct mt76_dev *dev, u8 phy_idx);
 s8 mt76_get_power_bound(struct mt76_phy *phy, s8 txpower);
 
 int mt76_get_txpower(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-		     unsigned int link_id, int *dbm);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
+		     unsigned int link_id,
+#endif
+			 int *dbm);
 int mt76_init_sar_power(struct ieee80211_hw *hw,
 			const struct cfg80211_sar_specs *sar);
 int mt76_get_sar_power(struct mt76_phy *phy,
@@ -1571,7 +1575,11 @@ int mt76_get_sar_power(struct mt76_phy *phy,
 void mt76_csa_check(struct mt76_dev *dev);
 void mt76_csa_finish(struct mt76_dev *dev);
 
-int mt76_get_antenna(struct ieee80211_hw *hw, int radio_idx, u32 *tx_ant,
+int mt76_get_antenna(struct ieee80211_hw *hw,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))
+  					int radio_idx,
+#endif
+					u32 *tx_ant,
 		     u32 *rx_ant);
 int mt76_set_tim(struct ieee80211_hw *hw, struct ieee80211_sta *sta, bool set);
 void mt76_insert_ccmp_hdr(struct sk_buff *skb, u8 key_id);
@@ -1870,7 +1878,11 @@ static inline void mt76_put_page_pool_buf(void *buf, bool allow_direct)
 {
 	struct page *page = virt_to_head_page(buf);
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))
 	page_pool_put_full_page(pp_page_to_nmdesc(page)->pp, page,
+#else
+	page_pool_put_full_page(page->pp, page,
+#endif
 				allow_direct);
 }
 

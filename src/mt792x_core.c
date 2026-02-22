@@ -305,7 +305,11 @@ EXPORT_SYMBOL_GPL(mt792x_tx_worker);
 
 void mt792x_roc_timer(struct timer_list *timer)
 {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0))
 	struct mt792x_phy *phy = timer_container_of(phy, timer, roc_timer);
+#else
+	struct mt792x_phy *phy = from_timer(phy, timer, roc_timer);
+#endif
 
 	ieee80211_queue_work(phy->mt76->hw, &phy->roc_work);
 }
@@ -313,7 +317,11 @@ EXPORT_SYMBOL_GPL(mt792x_roc_timer);
 
 void mt792x_csa_timer(struct timer_list *timer)
 {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0))
 	struct mt792x_vif *mvif = timer_container_of(mvif, timer, csa_timer);
+#else
+	struct mt792x_vif *mvif = from_timer(mvif, timer, csa_timer);
+#endif
 
 	ieee80211_queue_work(mvif->phy->mt76->hw, &mvif->csa_work);
 }
@@ -601,7 +609,10 @@ void mt792x_sta_statistics(struct ieee80211_hw *hw,
 }
 EXPORT_SYMBOL_GPL(mt792x_sta_statistics);
 
-void mt792x_set_coverage_class(struct ieee80211_hw *hw, int radio_idx,
+void mt792x_set_coverage_class(struct ieee80211_hw *hw,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))
+  					int radio_idx,
+#endif
 			       s16 coverage_class)
 {
 	struct mt792x_phy *phy = mt792x_hw_phy(hw);
