@@ -203,7 +203,12 @@ void mt7921_set_stream_he_caps(struct mt792x_phy *phy)
 		n = mt7921_init_he_caps(phy, NL80211_BAND_2GHZ, data);
 
 		band = &phy->mt76->sband_2g.sband;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0))
 		_ieee80211_set_sband_iftype_data(band, data, n);
+#else
+		band->iftype_data = data;
+		band->n_iftype_data = n;
+#endif
 	}
 
 	if (phy->mt76->cap.has_5ghz) {
@@ -211,14 +216,24 @@ void mt7921_set_stream_he_caps(struct mt792x_phy *phy)
 		n = mt7921_init_he_caps(phy, NL80211_BAND_5GHZ, data);
 
 		band = &phy->mt76->sband_5g.sband;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0))
 		_ieee80211_set_sband_iftype_data(band, data, n);
+#else
+		band->iftype_data = data;
+		band->n_iftype_data = n;
+#endif
 
 		if (phy->mt76->cap.has_6ghz) {
 			data = phy->iftype[NL80211_BAND_6GHZ];
 			n = mt7921_init_he_caps(phy, NL80211_BAND_6GHZ, data);
 
 			band = &phy->mt76->sband_6g.sband;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0))
 			_ieee80211_set_sband_iftype_data(band, data, n);
+#else
+			band->iftype_data = data;
+			band->n_iftype_data = n;
+#endif
 		}
 	}
 }
@@ -280,7 +295,12 @@ static int mt7921_start(struct ieee80211_hw *hw)
 	return err;
 }
 
-static void mt7921_stop(struct ieee80211_hw *hw, bool suspend)
+static void mt7921_stop(struct ieee80211_hw *hw
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))	
+						, bool suspend)
+#else
+						)
+#endif
 {
 	struct mt792x_dev *dev = mt792x_hw_dev(hw);
 	int err = 0;
@@ -804,7 +824,11 @@ mt7921_regd_set_6ghz_power_type(struct ieee80211_vif *vif, bool is_add)
 	}
 
 out:
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
 	if (vif->bss_conf.chanreq.oper.chan->band == NL80211_BAND_6GHZ)
+#else
+	if (vif->bss_conf.chandef.chan->band == NL80211_BAND_6GHZ)
+#endif
 		mt7921_regd_update(dev);
 }
 
@@ -1472,7 +1496,11 @@ void mt7921_csa_work(struct work_struct *work)
 					    dev->new_ctx);
 	mt792x_mutex_release(dev);
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0))
 	ieee80211_chswitch_done(vif, !ret, 0);
+#else
+	ieee80211_chswitch_done(vif, !ret);
+#endif
 }
 
 static int mt7921_pre_channel_switch(struct ieee80211_hw *hw,
@@ -1501,8 +1529,12 @@ static void mt7921_channel_switch(struct ieee80211_hw *hw,
 }
 
 static void mt7921_abort_channel_switch(struct ieee80211_hw *hw,
-					struct ieee80211_vif *vif,
-					struct ieee80211_bss_conf *link_conf)
+					struct ieee80211_vif *vif
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
+					,struct ieee80211_bss_conf *link_conf)
+#else
+					)
+#endif
 {
 	struct mt792x_vif *mvif = (struct mt792x_vif *)vif->drv_priv;
 

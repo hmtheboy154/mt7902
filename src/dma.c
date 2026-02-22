@@ -7,6 +7,18 @@
 #include "mt76.h"
 #include "dma.h"
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 9, 0))
+static inline void compat_init_dummy_netdev(struct net_device *dev)
+{
+	init_dummy_netdev(dev);
+}
+
+#ifndef alloc_netdev_dummy
+#define alloc_netdev_dummy(sizeof_priv) \
+	alloc_netdev(sizeof_priv, "dummy", NET_NAME_UNKNOWN, compat_init_dummy_netdev)
+#endif
+#endif
+
 static struct mt76_txwi_cache *
 mt76_alloc_txwi(struct mt76_dev *dev)
 {

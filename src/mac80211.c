@@ -864,8 +864,10 @@ struct mt76_phy *mt76_vif_phy(struct ieee80211_hw *hw,
 	struct mt76_vif_link *mlink = (struct mt76_vif_link *)vif->drv_priv;
 	struct mt76_chanctx *ctx;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0))
 	if (!hw->wiphy->n_radio)
 		return hw->priv;
+#endif
 
 	if (!mlink->ctx)
 		return NULL;
@@ -1125,7 +1127,11 @@ int mt76_get_survey(struct ieee80211_hw *hw, int idx,
 		if (idx == 0 && phy->dev->drv->update_survey)
 			mt76_update_survey(phy);
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))
 		if (sband || !hw->wiphy->n_radio)
+#else
+		if (sband)
+#endif
 			break;
 	}
 
@@ -1843,8 +1849,13 @@ EXPORT_SYMBOL_GPL(mt76_get_sar_power);
 static void
 __mt76_csa_finish(void *priv, u8 *mac, struct ieee80211_vif *vif)
 {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
 	if (vif->bss_conf.csa_active && ieee80211_beacon_cntdwn_is_complete(vif, 0))
 		ieee80211_csa_finish(vif, 0);
+#else
+	if (vif->bss_conf.csa_active && ieee80211_beacon_cntdwn_is_complete(vif))
+		ieee80211_csa_finish(vif);
+#endif
 }
 
 void mt76_csa_finish(struct mt76_dev *dev)
@@ -1868,7 +1879,11 @@ __mt76_csa_check(void *priv, u8 *mac, struct ieee80211_vif *vif)
 	if (!vif->bss_conf.csa_active)
 		return;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
 	dev->csa_complete |= ieee80211_beacon_cntdwn_is_complete(vif, 0);
+#else
+	dev->csa_complete |= ieee80211_beacon_cntdwn_is_complete(vif);
+#endif
 }
 
 void mt76_csa_check(struct mt76_dev *dev)
@@ -2109,7 +2124,11 @@ u16 mt76_select_links(struct ieee80211_vif *vif, int max_active_links)
 			continue;
 
 		data[n_data].link_id = link_id;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
 		data[n_data].band = link_conf->chanreq.oper.chan->band;
+#else
+		data[n_data].band = link_conf->chandef.chan->band;
+#endif
 		n_data++;
 	}
 	rcu_read_unlock();

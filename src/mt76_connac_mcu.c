@@ -1979,7 +1979,11 @@ int mt76_connac_mcu_chip_config(struct mt76_dev *dev)
 		.resp_type = 0,
 	};
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
 	strscpy(req.data, "assert");
+#else
+	strscpy(req.data, "assert", sizeof(req.data));
+#endif
 
 	return mt76_mcu_send_msg(dev, MCU_CE_CMD(CHIP_CONFIG),
 				 &req, sizeof(req), false);

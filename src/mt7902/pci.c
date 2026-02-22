@@ -13,6 +13,25 @@
 #include "../dma.h"
 #include "mcu.h"
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0))
+#ifndef pcim_iomap_region
+static inline void __iomem *pcim_iomap_region(struct pci_dev *pdev, int bar, const char *name)
+{
+	int ret;
+
+	/* * Step 1: Request the region using the older mask-based function.
+	 * BIT(bar) is equivalent to 1 << bar.
+	 */
+	ret = pcim_iomap_regions(pdev, BIT(bar), name);
+	if (ret)
+		return (void __iomem *)ERR_PTR(ret);
+
+	/* Step 2: Return the mapped pointer from the table */
+	return pcim_iomap_table(pdev)[bar];
+}
+#endif
+#endif
+
 static const struct pci_device_id mt7921_pci_device_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_MEDIATEK, 0x7902),
 		.driver_data = (kernel_ulong_t)MT7902_FIRMWARE_WM },
