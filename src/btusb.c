@@ -17,8 +17,12 @@
 #include <linux/suspend.h>
 #include <linux/gpio/consumer.h>
 #include <linux/debugfs.h>
-#include <linux/unaligned.h>
 #include <linux/version.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0))
+#include <linux/unaligned.h>
+#else
+#include <asm/unaligned.h>
+#endif
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -497,6 +501,7 @@ static void btusb_qca_reset(struct hci_dev *hdev)
 	btusb_reset(hdev);
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))
 static u8 btusb_classify_qca_pkt_type(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	/* Some Qualcomm controllers, e.g., QCNFA765 with WCN6855 chip, send debug
@@ -514,6 +519,7 @@ static u8 btusb_classify_qca_pkt_type(struct hci_dev *hdev, struct sk_buff *skb)
 	/* Use default packet type for other packets */
 	return hci_skb_pkt_type(skb);
 }
+#endif
 
 static inline void btusb_free_frags(struct btusb_data *data)
 {
@@ -1904,8 +1910,10 @@ static int btusb_setup_csr(struct hci_dev *hdev)
 		set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
 		set_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks);
 		set_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0))
 		set_bit(HCI_QUIRK_BROKEN_READ_VOICE_SETTING, &hdev->quirks);
 		set_bit(HCI_QUIRK_BROKEN_READ_PAGE_SCAN_TYPE, &hdev->quirks);
+#endif
 #endif
 
 		/* Clear the reset quirk since this is not an actual
@@ -3681,7 +3689,9 @@ static int btusb_probe(struct usb_interface *intf,
 		data->recv_acl = btusb_recv_acl_qca;
 		hci_devcd_register(hdev, btusb_coredump_qca, btusb_dump_hdr_qca, NULL);
 		data->setup_on_usb = btusb_setup_qca;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))
 		hdev->classify_pkt_type = btusb_classify_qca_pkt_type;
+#endif
 		hdev->shutdown = btusb_shutdown_qca;
 		hdev->set_bdaddr = btusb_set_bdaddr_wcn6855;
 		hdev->reset = btusb_qca_reset;
@@ -3766,7 +3776,9 @@ static int btusb_probe(struct usb_interface *intf,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_LE_STATES);
 #else
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0))
 		set_bit(HCI_QUIRK_BROKEN_LE_STATES, &hdev->quirks);
+#endif
 #endif
 
 	if (id->driver_info & BTUSB_DIGIANSWER) {
@@ -4097,9 +4109,17 @@ static struct usb_driver btusb_driver = {
 	.disable_hub_initiated_lpm = 1,
 
 #ifdef CONFIG_DEV_COREDUMP
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 8, 0))
 	.driver = {
 		.coredump = btusb_coredump,
 	},
+#else
+	.drvwrap = {
+		.driver = {
+			.coredump = btusb_coredump,
+		},
+	},
+#endif
 #endif
 };
 
