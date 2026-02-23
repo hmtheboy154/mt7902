@@ -791,6 +791,10 @@ mt792x_get_mac80211_ops(struct device *dev,
 		ops->remove_chanctx = ieee80211_emulate_remove_chanctx;
 		ops->change_chanctx = ieee80211_emulate_change_chanctx;
 		ops->switch_vif_chanctx = ieee80211_emulate_switch_vif_chanctx;
+#else
+		ops->add_chanctx = NULL;
+		ops->remove_chanctx = NULL;
+		ops->change_chanctx = NULL;
 #endif
 		ops->assign_vif_chanctx = NULL;
 		ops->unassign_vif_chanctx = NULL;
