@@ -31,19 +31,34 @@ cd btusb_mt7902
 make -j$(nproc)
 ```
 
-- To build the driver & install it, use this command
+- To build the driver & install it:
 
 ```bash
 sudo make install -j$(nproc)
 ```
 
-- To install the firmware required for the driver, use this command
+- To install the firmware required for the driver:
 
 ```bash
 sudo make install_fw
 ```
 
+- To remove the driver:
+
+```bash
+sudo make uninstall
+```
+
 Once you got the driver & firmware installed, reboot to see changes.
+
+## Note
+
+`btusb` and `btmtk` conflict with `btusb_mt7902`, unload them if loading `btusb_mt7902` presents an error.
+
+You can blacklist them by putting this in `/etc/modprobe.d/blacklist_btusb.conf`:
+```
+blacklist btusb btmtk
+```
 
 ## Feedback
 
