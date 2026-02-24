@@ -1898,7 +1898,7 @@ static int btusb_setup_csr(struct hci_dev *hdev)
 		 * Probably will need to be expanded in the future;
 		 * without these the controller will lock up.
 		 */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_STORED_LINK_KEY);
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_ERR_DATA_REPORTING);
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL);
@@ -1919,7 +1919,7 @@ static int btusb_setup_csr(struct hci_dev *hdev)
 		/* Clear the reset quirk since this is not an actual
 		 * early Bluetooth 1.1 device from CSR.
 		 */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_clear_quirk(hdev, HCI_QUIRK_RESET_ON_CLOSE);
 		hci_clear_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY);
 #else
@@ -3029,7 +3029,7 @@ static int btusb_setup_qca(struct hci_dev *hdev)
 	/* Mark HCI_OP_ENHANCED_SETUP_SYNC_CONN as broken as it doesn't seem to
 	 * work with the likes of HSP/HFP mSBC.
 	 */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 	hci_set_quirk(hdev, HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN);
 #else
 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
@@ -3556,7 +3556,7 @@ static int btusb_probe(struct usb_interface *intf,
 			goto out_free_dev;
 	}
 #endif
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 	if (id->driver_info & BTUSB_CW6622)
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_STORED_LINK_KEY);
 
@@ -3625,7 +3625,7 @@ static int btusb_probe(struct usb_interface *intf,
 		hdev->reset = btmtk_reset_sync;
 		hdev->set_bdaddr = btmtk_set_bdaddr;
 		hdev->send = btusb_send_frame_mtk;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN);
 		hci_set_quirk(hdev, HCI_QUIRK_NON_PERSISTENT_SETUP);
 #else
@@ -3639,7 +3639,7 @@ static int btusb_probe(struct usb_interface *intf,
 	}
 
 	if (id->driver_info & BTUSB_SWAVE) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_FIXUP_INQUIRY_MODE);
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_LOCAL_COMMANDS);
 #else
@@ -3650,7 +3650,7 @@ static int btusb_probe(struct usb_interface *intf,
 
 	if (id->driver_info & BTUSB_INTEL_BOOT) {
 		hdev->manufacturer = 2;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_RAW_DEVICE);
 #else
 		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
@@ -3660,7 +3660,7 @@ static int btusb_probe(struct usb_interface *intf,
 	if (id->driver_info & BTUSB_ATH3012) {
 		data->setup_on_usb = btusb_setup_qca;
 		hdev->set_bdaddr = btusb_set_bdaddr_ath3012;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY);
 		hci_set_quirk(hdev, HCI_QUIRK_STRICT_DUPLICATE_FILTER);
 #else
@@ -3674,7 +3674,7 @@ static int btusb_probe(struct usb_interface *intf,
 		hdev->shutdown = btusb_shutdown_qca;
 		hdev->set_bdaddr = btusb_set_bdaddr_ath3012;
 		hdev->reset = btusb_qca_reset;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY);
 #else
 		set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
@@ -3695,7 +3695,7 @@ static int btusb_probe(struct usb_interface *intf,
 		hdev->shutdown = btusb_shutdown_qca;
 		hdev->set_bdaddr = btusb_set_bdaddr_wcn6855;
 		hdev->reset = btusb_qca_reset;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY);
 #else
 		set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
@@ -3727,7 +3727,7 @@ static int btusb_probe(struct usb_interface *intf,
 
 	if (id->driver_info & BTUSB_ACTIONS_SEMI) {
 		/* Support is advertised, but not implemented */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_ERR_DATA_REPORTING);
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER);
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT);
@@ -3747,7 +3747,7 @@ static int btusb_probe(struct usb_interface *intf,
 	}
 
 	if (!reset)
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_RESET_ON_CLOSE);
 #else
 		set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
@@ -3755,7 +3755,7 @@ static int btusb_probe(struct usb_interface *intf,
 
 	if (force_scofix || id->driver_info & BTUSB_WRONG_SCO_MTU) {
 		if (!disable_scofix)
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 			hci_set_quirk(hdev, HCI_QUIRK_FIXUP_BUFFER_SIZE);
 #else
 			set_bit(HCI_QUIRK_FIXUP_BUFFER_SIZE, &hdev->quirks);
@@ -3766,14 +3766,14 @@ static int btusb_probe(struct usb_interface *intf,
 		data->isoc = NULL;
 
 	if (id->driver_info & BTUSB_WIDEBAND_SPEECH)
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED);
 #else
 		set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
 #endif
 
 	if (id->driver_info & BTUSB_INVALID_LE_STATES)
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_LE_STATES);
 #else
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0))
@@ -3783,7 +3783,7 @@ static int btusb_probe(struct usb_interface *intf,
 
 	if (id->driver_info & BTUSB_DIGIANSWER) {
 		data->cmdreq_type = USB_TYPE_VENDOR;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_RESET_ON_CLOSE);
 #else
 		set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
@@ -3796,14 +3796,14 @@ static int btusb_probe(struct usb_interface *intf,
 
 		/* Old firmware would otherwise execute USB reset */
 		if (bcdDevice < 0x117)
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 			hci_set_quirk(hdev, HCI_QUIRK_RESET_ON_CLOSE);
 #else
 			set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
 #endif
 
 		/* This must be set first in case we disable it for fakes */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 		hci_set_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY);
 #else
 		set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
@@ -3820,7 +3820,7 @@ static int btusb_probe(struct usb_interface *intf,
 
 		/* New sniffer firmware has crippled HCI interface */
 		if (le16_to_cpu(udev->descriptor.bcdDevice) > 0x997)
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 8))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 			hci_set_quirk(hdev, HCI_QUIRK_RAW_DEVICE);
 #else
 			set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
