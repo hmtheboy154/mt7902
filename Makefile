@@ -51,7 +51,7 @@ endif
 
 install_fw:
 ifeq ($(wildcard $(FWDIR)), )
-	@install -vDm 644 -t $(FWDIR) firmware/*.bin
+	@install -vDm 644 -t $(FWDIR)/$(MODNAME) firmware/*.bin
 else
 	@cp -vr firmware tmp
 ifneq ($(wildcard $(FWDIR)/*.zst), )
@@ -63,7 +63,7 @@ endif
 ifneq ($(wildcard $(FWDIR)/*.gz), )
 	@gzip -f tmp/*.bin
 endif
-	@install -vDm 644 -t $(FWDIR) tmp/*
+	@install -vDm 644 -t $(FWDIR)/$(MODNAME) tmp/*
 	@rm -vrf tmp
 endif
 
@@ -72,3 +72,6 @@ uninstall:
 	@rmmod -v $(MODNAME) || true
 	@rm -vrf $(MODDESTDIR)
 	@depmod $(DEPMOD_ARGS)
+
+uninstall_fw:
+	@rm -vrf $(FWDIR)/$(MODNAME)
