@@ -3,7 +3,8 @@ KVER ?= $(if $(KERNELRELEASE),$(KERNELRELEASE),$(shell uname -r))
 KSRC ?= $(if $(KERNEL_SRC),$(KERNEL_SRC),/lib/modules/$(KVER)/build)
 FWDIR := /lib/firmware/mediatek
 JOBS ?= $(shell nproc --ignore=1)
-MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/mediatek/mt7902e
+MODNAME := mt7902e
+MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/mediatek/$(MODNAME)
 MT76DIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/mediatek/mt76
 
 ifneq ("$(INSTALL_MOD_PATH)", "")
@@ -29,14 +30,14 @@ SRC_DIR := $(shell pwd)/src
 
 all:
 	$(MAKE) -j$(JOBS) -C $(KSRC) M=$(SRC_DIR) modules
-	@cp $(SRC_DIR)/*.ko .
+	@cp -v $(SRC_DIR)/*.ko .
 
 clean:
 	$(MAKE) -j$(JOBS) -C $(KSRC) M=$(SRC_DIR) clean
-	@rm -f *.ko
+	@rm -vf *.ko
 
 install: all
-	@install -D -m 644 -t $(MODDESTDIR) *.ko
+	@install -vDm 644 -t $(MODDESTDIR) *.ko
 ifeq ($(COMPRESS_GZIP), y)
 	@gzip -f $(MODDESTDIR)/*.ko
 endif
@@ -50,9 +51,9 @@ endif
 
 install_fw:
 ifeq ($(wildcard $(FWDIR)), )
-	@install -Dvm 644 -t $(FWDIR) firmware/*.bin
+	@install -vDm 644 -t $(FWDIR) firmware/*.bin
 else
-	@cp -r firmware tmp
+	@cp -vr firmware tmp
 ifneq ($(wildcard $(FWDIR)/*.zst), )
 	@zstd -fq --rm tmp/*.bin
 endif
@@ -62,11 +63,12 @@ endif
 ifneq ($(wildcard $(FWDIR)/*.gz), )
 	@gzip -f tmp/*.bin
 endif
-	@install -Dvm 644 -t $(FWDIR) tmp/*
-	@rm -rf tmp
+	@install -vDm 644 -t $(FWDIR) tmp/*
+	@rm -vrf tmp
 endif
 
 uninstall:
-	@rmmod -s mt7902e || true
-	@rm -rf $(MODDESTDIR)
+	@echo "Unloading module"
+	@rmmod -v $(MODNAME) || true
+	@rm -vrf $(MODDESTDIR)
 	@depmod $(DEPMOD_ARGS)
