@@ -2284,6 +2284,20 @@ int mt76_connac_mcu_set_rate_txpower(struct mt76_phy *phy)
 			return err;
 	}
 
+    /* Update txpower_cur so mt76_get_txpower() reports the actual
+     * configured TX power instead of always returning 3 dBm due to
+     * txpower_cur being left at its zero-initialized value.
+     * The value is stored in 0.5 dBm units as used by the SKU table.
+     */
+    if (phy->chandef.chan) {
+        struct mt76_power_limits limits;
+        s8 tx_power;
+
+        tx_power = mt76_get_power_bound(phy, phy->chandef.chan->max_power);
+        tx_power = mt76_get_rate_power_limits(phy, phy->chandef.chan,
+                          &limits, tx_power);
+        phy->txpower_cur = tx_power;
+    }
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mt76_connac_mcu_set_rate_txpower);
