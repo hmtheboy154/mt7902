@@ -49,6 +49,12 @@ sudo make install_fw
 sudo make uninstall
 ```
 
+- To remove the firmware:
+
+```bash
+sudo make uninstall_fw
+```
+
 Once you got the driver & firmware installed, reboot to see changes.
 
 ## Note
