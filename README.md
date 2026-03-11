@@ -31,16 +31,31 @@ cd mt7902
 make -j$(nproc)
 ```
 
-- To build the driver & install it, use this command
+- To build the driver & install it:
 
 ```bash
 sudo make install -j$(nproc)
 ```
 
-- To install the firmware required for the driver, use this command
+> [!TIP]
+> As per the [20260309](https://gitlab.com/kernel-firmware/linux-firmware#linux-firmware) release, the firmware should be already provided by your distribution, for Debian as of present, check in the unstable repo.
+
+- To install the firmware required for the driver:
 
 ```bash
 sudo make install_fw
+```
+
+- To remove the driver:
+
+```bash
+sudo make uninstall
+```
+
+- To remove the firmware:
+
+```bash
+sudo make uninstall_fw
 ```
 
 Once you got the driver & firmware installed, reboot to see changes.
