@@ -50,7 +50,7 @@ endif
 
 install_fw:
 ifeq ($(wildcard $(FWDIR)), )
-	@install -vDm 644 -t $(FWDIR)/$(MODNAME) firmware/*.bin
+	@install -vDm 644 -t $(FWDIR) firmware/*.bin
 else
 	@cp -vr firmware tmp
 ifneq ($(wildcard $(FWDIR)/*.zst), )
@@ -62,7 +62,7 @@ endif
 ifneq ($(wildcard $(FWDIR)/*.gz), )
 	@gzip -f tmp/*.bin
 endif
-	@install -vDm 644 -t $(FWDIR)/$(MODNAME) tmp/*
+	@install -vDm 644 -t $(FWDIR) tmp/*
 	@rm -vrf tmp
 endif
 
@@ -73,4 +73,4 @@ uninstall:
 	@depmod $(DEPMOD_ARGS)
 
 uninstall_fw:
-	@rm -vrf $(FWDIR)/$(MODNAME)
+	@rm -vrf $(FWDIR)/BT_RAM_CODE_MT7902_1_1_hdr.bin.*
