@@ -60,6 +60,23 @@ sudo make uninstall_fw
 
 Once you got the driver & firmware installed, reboot to see changes.
 
+> [!TIP]
+> ### Automated installation
+> 
+> Community installer that handles the entire process automatically (distro detection, dependencies, compilation, blacklisting, DKMS, initramfs):
+> 
+> ```bash
+> curl -sSL https://raw.githubusercontent.com/EdinsonMoreno/mt7902-linux-installer/main/install.sh | sudo bash
+> ```
+> 
+> Also includes automated uninstall:
+> ```bash
+> curl -sSL https://raw.githubusercontent.com/EdinsonMoreno/mt7902-linux-installer/main/uninstall.sh | sudo bash
+> ```
+> 
+> Supports Fedora, RHEL, Ubuntu/Debian, Arch Linux.
+> Full repo: [EdinsonMoreno/mt7902-linux-installer](https://github.com/EdinsonMoreno/mt7902-linux-installer)
+
 ## Feedback
 
 If you have any issue using this driver, please provide feedback in this [Discord group](https://discord.gg/JGhjAxEFhz).
