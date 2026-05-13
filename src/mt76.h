@@ -1879,6 +1879,8 @@ static inline void mt76_put_page_pool_buf(void *buf, bool allow_direct)
 	struct page *page = virt_to_head_page(buf);
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))
+	page_pool_put_full_page(__netmem_get_pp(page_to_netmem(page)), page,
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0))
 	page_pool_put_full_page(pp_page_to_nmdesc(page)->pp, page,
 #else
 	page_pool_put_full_page(page->pp, page,
