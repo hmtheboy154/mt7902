@@ -2,6 +2,9 @@
 
 This is basically the mainline version of btusb & btmtk with [patches to support MT7902](https://lore.kernel.org/all/20260219231624.8226-1-sean.wang@kernel.org/) & firmware provided by Mediatek. I stripped down all the unnecessary files & other hardware support to ensure only MT7902 card is supported.
 
+> [!CAUTION]
+> [Kernel 7.1](https://kernel.org/) has added official support for MT7902 bluetooth and wifi, it's recommended to use their official driver instead and **follow the instructions clearly** on [bugzilla.kernel.org](https://bugzilla.kernel.org/)'s homepage when reporting problems.
+
 > [!WARNING]
 > This out-of-tree driver only support the PCIe version of MT7902, for SDIO support it's better if you just merge Mediatek patches on your own !
 
