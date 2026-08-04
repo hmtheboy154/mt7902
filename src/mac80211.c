@@ -861,19 +861,21 @@ EXPORT_SYMBOL_GPL(mt76_reset_device);
 struct mt76_phy *mt76_vif_phy(struct ieee80211_hw *hw,
 			      struct ieee80211_vif *vif)
 {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0))
 	struct mt76_vif_link *mlink = (struct mt76_vif_link *)vif->drv_priv;
 	struct mt76_chanctx *ctx;
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0))
 	if (!hw->wiphy->n_radio)
 		return hw->priv;
-#endif
 
 	if (!mlink->ctx)
 		return NULL;
 
 	ctx = (struct mt76_chanctx *)mlink->ctx->drv_priv;
 	return ctx->phy;
+#else
+	return hw->priv;
+#endif
 }
 EXPORT_SYMBOL_GPL(mt76_vif_phy);
 
