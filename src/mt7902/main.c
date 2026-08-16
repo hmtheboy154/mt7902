@@ -9,6 +9,16 @@
 #include "mt7921.h"
 #include "mcu.h"
 
+/* MT7902 firmware neither negotiates ADDBA autonomously (as MT7921 fw does
+ * with IEEE80211_AMPDU_TX_START_IMMEDIATE) nor tolerates a mac80211-driven
+ * BlockAck handshake: with aggregation enabled >80% of TX MPDUs fail and
+ * >50% of A-MPDUs receive no BlockAck (ba_miss), collapsing the link.
+ * Default TX A-MPDU aggregation off; RX aggregation is unaffected.
+ */
+static bool mt7921_disable_tx_aggr = true;
+module_param_named(disable_tx_aggr, mt7921_disable_tx_aggr, bool, 0644);
+MODULE_PARM_DESC(disable_tx_aggr, "disable TX A-MPDU aggregation (default: on for MT7902)");
+
 static int
 mt7921_init_he_caps(struct mt792x_phy *phy, enum nl80211_band band,
 		    struct ieee80211_sband_iftype_data *data)
@@ -1005,6 +1015,10 @@ mt7921_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 		mt7921_mcu_uni_tx_ba(dev, params, false);
 		break;
 	case IEEE80211_AMPDU_TX_START:
+		if (mt7921_disable_tx_aggr) {
+			ret = -EOPNOTSUPP;
+			break;
+		}
 		set_bit(tid, &msta->deflink.wcid.ampdu_state);
 		ret = IEEE80211_AMPDU_TX_START_IMMEDIATE;
 		break;
