@@ -340,6 +340,10 @@ mt76_init_sband(struct mt76_phy *phy, struct mt76_sband *msband,
 		       IEEE80211_HT_CAP_SGI_40 |
 		       (1 << IEEE80211_HT_CAP_RX_STBC_SHIFT);
 
+	if (msband == &phy->sband_2g && phy->cap.no_ht40_2ghz)
+		ht_cap->cap &= ~(IEEE80211_HT_CAP_SUP_WIDTH_20_40 |
+				 IEEE80211_HT_CAP_SGI_40);
+
 	ht_cap->mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
 	ht_cap->ampdu_factor = IEEE80211_HT_MAX_AMPDU_64K;
 
