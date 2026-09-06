@@ -1,5 +1,8 @@
 # mt7902e
 
+> [!WARNING]
+> This repo is now archived, better support (for kernel 6.12+) is in [morrownr's repo](https://github.com/morrownr/mt76).
+
 This is basically the mainline version of mt76 with [patches to support MT7902](https://lore.kernel.org/all/20260219004007.19733-1-sean.wang@kernel.org/) & firmware provided by Mediatek. I also stripped down all the unnecessary files & other hardware support to ensure only MT7902 card is supported.
 
 > [!CAUTION]
