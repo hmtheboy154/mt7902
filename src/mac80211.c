@@ -1782,12 +1782,25 @@ int mt76_get_txpower(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	struct mt76_phy *phy = mt76_vif_phy(hw, vif);
 	int n_chains, delta;
 
+	/* Fall back to the primary phy when vif context isn't set yet */
+	if (!phy)
+		phy = hw->priv;
+
 	if (!phy)
 		return -EINVAL;
 
 	n_chains = hweight16(phy->chainmask);
 	delta = mt76_tx_power_path_delta(n_chains);
-	*dbm = DIV_ROUND_UP(phy->txpower_cur + delta, 2);
+
+	if (phy->txpower_cur <= 0 && phy->chandef.chan) {
+		/* txpower_cur not yet set by firmware; fall back to the
+		 * regulatory max for this channel. mt76_get_sar_power can
+		 * return garbage values on systems with invalid ACPI SAR
+		 * tables (e.g. frp[i].power == -1), so we bypass it here. */
+		*dbm = phy->chandef.chan->max_power;
+	} else {
+		*dbm = DIV_ROUND_UP(phy->txpower_cur + delta, 2);
+	}
 
 	return 0;
 }
