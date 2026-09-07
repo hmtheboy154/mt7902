@@ -9,6 +9,32 @@
 #include "mt7921.h"
 #include "mcu.h"
 
+/* MT7902 firmware neither negotiates ADDBA autonomously (as MT7921 fw does
+ * with IEEE80211_AMPDU_TX_START_IMMEDIATE) nor tolerates a mac80211-driven
+ * BlockAck handshake: with aggregation enabled >80% of TX MPDUs fail and
+ * >50% of A-MPDUs receive no BlockAck (ba_miss), collapsing the link.
+ * Default TX A-MPDU aggregation off; RX aggregation is unaffected.
+ */
+static bool mt7921_disable_tx_aggr = true;
+module_param_named(disable_tx_aggr, mt7921_disable_tx_aggr, bool, 0644);
+MODULE_PARM_DESC(disable_tx_aggr, "disable TX A-MPDU aggregation (default: on for MT7902)");
+
+/* MT7902 does not pass traffic on a 40 MHz channel in the 2.4 GHz band even
+ * though the firmware accepts CHANNEL_SWITCH / BSS_INFO_RLM with CBW_40MHZ:
+ * no HE data is decoded from the AP and nothing we transmit is acked, while
+ * the same link at 20 MHz (and 5 GHz at 80 MHz) is fine.  Only advertise
+ * 20 MHz on 2.4 GHz so mac80211 never negotiates HT40/HE40 there.
+ */
+static bool mt7921_disable_ht40_2g = true;
+module_param_named(disable_ht40_2g, mt7921_disable_ht40_2g, bool, 0444);
+MODULE_PARM_DESC(disable_ht40_2g, "do not advertise 40 MHz on 2.4 GHz (default: on for MT7902)");
+
+bool mt7921_ht40_2g_blocked(struct mt792x_phy *phy)
+{
+	return mt7921_disable_ht40_2g && is_mt7902(phy->mt76->dev);
+}
+EXPORT_SYMBOL_GPL(mt7921_ht40_2g_blocked);
+
 static int
 mt7921_init_he_caps(struct mt792x_phy *phy, enum nl80211_band band,
 		    struct ieee80211_sband_iftype_data *data)
@@ -52,6 +78,7 @@ mt7921_init_he_caps(struct mt792x_phy *phy, enum nl80211_band band,
 
 		if (band == NL80211_BAND_2GHZ)
 			he_cap_elem->phy_cap_info[0] =
+				mt7921_ht40_2g_blocked(phy) ? 0 :
 				IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_40MHZ_IN_2G;
 		else
 			he_cap_elem->phy_cap_info[0] =
@@ -122,8 +149,11 @@ mt7921_init_he_caps(struct mt792x_phy *phy, enum nl80211_band band,
 				IEEE80211_HE_PHY_CAP7_POWER_BOOST_FACTOR_SUPP |
 				IEEE80211_HE_PHY_CAP7_HE_SU_MU_PPDU_4XLTF_AND_08_US_GI;
 			he_cap_elem->phy_cap_info[8] |=
-				IEEE80211_HE_PHY_CAP8_20MHZ_IN_40MHZ_HE_PPDU_IN_2G |
 				IEEE80211_HE_PHY_CAP8_DCM_MAX_RU_484;
+			if (band != NL80211_BAND_2GHZ ||
+			    !mt7921_ht40_2g_blocked(phy))
+				he_cap_elem->phy_cap_info[8] |=
+					IEEE80211_HE_PHY_CAP8_20MHZ_IN_40MHZ_HE_PPDU_IN_2G;
 			he_cap_elem->phy_cap_info[9] |=
 				IEEE80211_HE_PHY_CAP9_LONGER_THAN_16_SIGB_OFDM_SYM |
 				IEEE80211_HE_PHY_CAP9_NON_TRIGGERED_CQI_FEEDBACK |
@@ -1005,6 +1035,10 @@ mt7921_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 		mt7921_mcu_uni_tx_ba(dev, params, false);
 		break;
 	case IEEE80211_AMPDU_TX_START:
+		if (mt7921_disable_tx_aggr) {
+			ret = -EOPNOTSUPP;
+			break;
+		}
 		set_bit(tid, &msta->deflink.wcid.ampdu_state);
 		ret = IEEE80211_AMPDU_TX_START_IMMEDIATE;
 		break;

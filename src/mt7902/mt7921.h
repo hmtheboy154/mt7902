@@ -280,6 +280,7 @@ void mt7921_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
 			 struct sk_buff *skb, u32 *info);
 void mt7921_stats_work(struct work_struct *work);
 void mt7921_set_stream_he_caps(struct mt792x_phy *phy);
+bool mt7921_ht40_2g_blocked(struct mt792x_phy *phy);
 int mt7921_init_debugfs(struct mt792x_dev *dev);
 
 int mt7921_mcu_set_beacon_filter(struct mt792x_dev *dev,

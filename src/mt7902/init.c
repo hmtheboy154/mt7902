@@ -325,6 +325,7 @@ int mt7921_register_device(struct mt792x_dev *dev)
 		return ret;
 
 	hw->wiphy->reg_notifier = mt7921_regd_notifier;
+	dev->mphy.cap.no_ht40_2ghz = mt7921_ht40_2g_blocked(&dev->phy);
 	dev->mphy.sband_2g.sband.ht_cap.cap |=
 			IEEE80211_HT_CAP_LDPC_CODING |
 			IEEE80211_HT_CAP_MAX_AMSDU;
