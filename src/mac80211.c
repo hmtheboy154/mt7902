@@ -870,7 +870,7 @@ struct mt76_phy *mt76_vif_phy(struct ieee80211_hw *hw,
 #endif
 
 	if (!mlink->ctx)
-		return NULL;
+		return hw->priv;
 
 	ctx = (struct mt76_chanctx *)mlink->ctx->drv_priv;
 	return ctx->phy;
